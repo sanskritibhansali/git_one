@@ -54,21 +54,22 @@ f=light(ss,a)
 #this code has to be added in quest. 
 dark=0
 light=1
-v_sun_m=np.array([0,0,0])            
-for i in range(6):
-    if ss[i]==0:
-        dark=dark+1
-if dark==6:
-       light=0
-if light==1:     
-       for n in range(3):
-                m=n*2;
-                if ss[m]>=ss[m+1]:
-                      v_sun_m[n]=1.0*ss[m]
-                else:
-                   v_sun_m[n]=-1.0*ss[m+1]
-mode=pow((pow(v_sun_m[0],2)+pow(v_sun_m[1],2)+pow(v_sun_m[2],2)),0.5)                       
-v_sun_m=v_sun_m/mode        #gives the unit sun vector to be used in quest.    
+def calc_sv(ss,dark,light):
+      v_sun_m=np.array([0,0,0])            
+      for i in range(6):
+           if ss[i]==0:
+               dark=dark+1
+      if dark==6:
+          light=0
+      if light==1:     
+         for n in range(3):
+                  m=n*2;
+                  if ss[m]>=ss[m+1]:
+                        v_sun_m[n]=1.0*ss[m]
+                  else:
+                     v_sun_m[n]=-1.0*ss[m+1]
+      mode=pow((pow(v_sun_m[0],2)+pow(v_sun_m[1],2)+pow(v_sun_m[2],2)),0.5)                       
+      v_sun_m=v_sun_m/mode        #gives the unit sun vector to be used in quest.    
 #print(v_sun_m)
                
         
