@@ -1,7 +1,11 @@
 import numpy as np
-sun_vector=np.array([input()])
+x=float(input())
+y=float(input())
+z=float(input())
+sun_vector=np.array([x,y,z])
+print(sun_vector)
 SS_GAIN=3.3 #gain factor as the readings from sunsensor are in voltage.
-SS_QUANTIZER=pow(2,10)  #because we have 10 bit adc
+SS_QUANTIZER=pow(2,10)-1  #because we have 10 bit adc
 MAX_ANGLE=55            #taken from pratham's simulink model,can be adjusted, it is the 1/2 of threshold value of angle which will be taken in FOV
 v_S1=np.array([1,0,0])   #vectors perpendicular to sensors.
 v_S2=np.array([-1,0,0])
@@ -9,35 +13,39 @@ v_S3=np.array([0,1,0])
 v_S4=np.array([0,-1,0])
 v_S5=np.array([0,0,1])
 v_S6=np.array([0,0,-1])
-ss=np.array([0,0,0,0,0,0])
+#ss=np.array([0,0,0,0,0,0])
 def ad_convertor(sun_vector,v_S1,v_S2,v_S3,v_S4,v_S5,v_S6,SS_GAIN,SS_QUANTIZER):    #works as adc convertor, quantizes the readings of sensor
-        u=1/SS_QUANTIZER                                                            #for more you can refer to documentation of this code.
-        ss[0]=(np.dot(sun_vector,v_S1))
-        if ss[0]<0:
-            ss[0]=0    
-        ss[0]=(u)*(round(ss[0]/u))*SS_GAIN
-        ss[1]=(np.dot(sun_vector,v_S2))
-        if ss[1]<0:
-            ss[1]=0    
-        ss[1]=(u)*(round(ss[1]/u))*SS_GAIN
-        ss[2]=(np.dot(sun_vector,v_S3))
-        if ss[2]<0:
-            ss[2]=0    
-        ss[2]=(u)*(round(ss[2]/u))*SS_GAIN
-        ss[3]=(np.dot(sun_vector,v_S4))
-        if ss[3]<0:
-            ss[3]=0    
-        ss[3]=(u)*(round(ss[3]/u))*SS_GAIN
-        ss[4]=(np.dot(sun_vector,v_S5))
-        if ss[4]<0:
-            ss[4]=0    
-        ss[4]=(u)*(round(ss[4]/u))*SS_GAIN
-        ss[5]=(np.dot(sun_vector,v_S6))
-        if ss[5]<0:
-            ss[5]=0    
-        ss[5]=(u)*(round(ss[5]/u))*SS_GAIN
-        return ss                            #stores quantized values of all readings.
-ad_convertor(sun_vector,v_S1,v_S2,v_S3,v_S4,v_S5,v_S6,SS_GAIN,SS_QUANTIZER)           
+        u=1/SS_QUANTIZER #for more you can refer to documentation of this code.
+        #print(u)
+        ss1=np.dot(sun_vector,v_S1)
+        #print (ss[0])
+        if ss1<0:
+            ss1=0    
+        ss1=(u)*(round(ss1/u))*SS_GAIN
+        print(ss1)
+        ss2=(np.dot(sun_vector,v_S2))
+        if ss2<0:
+            ss2=0    
+        ss2=(u)*(round(ss2/u))*SS_GAIN
+        ss3=(np.dot(sun_vector,v_S3))
+        if ss3<0:
+            ss3=0    
+        ss3=(u)*(round(ss3/u))*SS_GAIN
+        ss4=(np.dot(sun_vector,v_S4))
+        if ss4<0:
+            ss4=0    
+        ss4=(u)*(round(ss4/u))*SS_GAIN
+        ss5=(np.dot(sun_vector,v_S5))
+        if ss5<0:
+            ss5=0    
+        ss5=(u)*(round(ss5/u))*SS_GAIN
+        ss6=(np.dot(sun_vector,v_S6))
+        if ss6<0:
+            ss6=0    
+        ss6=(u)*(round(ss6/u))*SS_GAIN
+        return np.array([ss1,ss2,ss3,ss4,ss5,ss6])                            #stores quantized values of all readings.
+print(ad_convertor(sun_vector,v_S1,v_S2,v_S3,v_S4,v_S5,v_S6,SS_GAIN,SS_QUANTIZER))
+ss=ad_convertor(sun_vector,v_S1,v_S2,v_S3,v_S4,v_S5,v_S6,SS_GAIN,SS_QUANTIZER)          
 a=np.cos(MAX_ANGLE*np.pi/180)
 f=np.array([0,0,0,0,0,0])
 def light(ss,a):                #calucates the flag value-light
