@@ -1,9 +1,9 @@
 import numpy as np
-x=float(input())
-y=float(input())
-z=float(input())
-sun_vector=np.array([x,y,z])
-print(sun_vector)
+#x=float(input())
+#y=float(input())
+#z=float(input())
+#sun_vector=np.array([x,y,z])
+#print(sun_vector)
 SS_GAIN=3.3 #gain factor as the readings from sunsensor are in voltage.
 SS_QUANTIZER=pow(2,10)-1  #because we have 10 bit adc
 MAX_ANGLE=55            #taken from pratham's simulink model,can be adjusted, it is the 1/2 of threshold value of angle which will be taken in FOV
@@ -13,16 +13,14 @@ v_S3=np.array([0,1,0])
 v_S4=np.array([0,-1,0])
 v_S5=np.array([0,0,1])
 v_S6=np.array([0,0,-1])
-#ss=np.array([0,0,0,0,0,0])
 def ad_convertor(sun_vector,v_S1,v_S2,v_S3,v_S4,v_S5,v_S6,SS_GAIN,SS_QUANTIZER):    #works as adc convertor, quantizes the readings of sensor
-        u=1/SS_QUANTIZER #for more you can refer to documentation of this code.
+        u=1/(SS_QUANTIZER-1)                                                          #for more you can refer to documentation of this code.
         #print(u)
         ss1=np.dot(sun_vector,v_S1)
-        #print (ss[0])
         if ss1<0:
             ss1=0    
         ss1=(u)*(round(ss1/u))*SS_GAIN
-        print(ss1)
+        #print(ss1)
         ss2=(np.dot(sun_vector,v_S2))
         if ss2<0:
             ss2=0    
@@ -77,8 +75,8 @@ def calc_sv(ss,dark,light):
                   else:
                      v_sun_m[n]=-1.0*ss[m+1]
       mode=pow((pow(v_sun_m[0],2)+pow(v_sun_m[1],2)+pow(v_sun_m[2],2)),0.5)                       
-      v_sun_m=v_sun_m/mode        #gives the unit sun vector to be used in quest.    
-#print(v_sun_m)
+      return v_sun_m/mode        #gives the unit sun vector to be used in quest.    
+print(calc_sv(ss,dark,light))
                
         
             
