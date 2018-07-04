@@ -29,13 +29,14 @@ def ad_convertor(sun_vector,v_S1,v_S2,v_S3,v_S4,v_S5,v_S6,SS_GAIN,SS_QUANTIZER):
         ss6=(u)*(round(ss6/u))*SS_GAIN
         return np.array([ss1,ss2,ss3,ss4,ss5,ss6])                            #stores quantized values of all readings.
 f=np.array([0,0,0,0,0,0])
+#a=np.cos(MAX_ANGLE*np.pi/180)*SS_GAIN
 def light(ss,a):                #calucates the flag value-light
     for i in range(6):
         if ss[i]>a:
             f[i]=1
         else:
             f[i]=0
-        return f    
+    return f    
 def calc_sv(ss,dark,light):
       v_sun_m=np.array([0,0,0])            
       for i in range(6):
