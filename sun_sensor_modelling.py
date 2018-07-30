@@ -1,12 +1,11 @@
 import numpy as np
-def ad_convertor(sun_vector,v_S1,v_S2,v_S3,v_S4,v_S5,v_S6,SS_GAIN,SS_QUANTIZER):    #works as adc convertor, quantizes the readings of sensor
+def ad_Convertor(sun_vector,v_S1,v_S2,v_S3,v_S4,v_S5,v_S6,SS_GAIN,SS_QUANTIZER):    #works as adc convertor, quantizes the readings of sensor
         u=1/(SS_QUANTIZER-1)                                                          #for more you can refer to documentation of this code.
-        #print(u)
+                                                                       #takes input of sun vector, gain, quantizer, sensor vectors to give modelled quantized readings of sun sensor
         ss1=np.dot(sun_vector,v_S1)
         if ss1<0:
             ss1=0    
         ss1=(u)*(round(ss1/u))*SS_GAIN
-        #print(ss1)
         ss2=(np.dot(sun_vector,v_S2))
         if ss2<0:
             ss2=0    
@@ -30,14 +29,14 @@ def ad_convertor(sun_vector,v_S1,v_S2,v_S3,v_S4,v_S5,v_S6,SS_GAIN,SS_QUANTIZER):
         return np.array([ss1,ss2,ss3,ss4,ss5,ss6])                            #stores quantized values of all readings.
 f=np.array([0,0,0,0,0,0])
 #a=np.cos(MAX_ANGLE*np.pi/180)*SS_GAIN
-def light(ss,a):                #calucates the flag value-light
+def light(ss,a):                #calucates the flag value-light, by giving boolean for each sun sensor according to thresold given as input.
     for i in range(6):
         if ss[i]>a:
             f[i]=1
         else:
             f[i]=0
     return f    
-def calc_sv(ss,dark,light):
+def calc_SV(ss,dark,light):             #calculates back the sun vector using the sensor readings.
       v_sun_m=np.array([0,0,0])            
       for i in range(6):
            if ss[i]==0:
