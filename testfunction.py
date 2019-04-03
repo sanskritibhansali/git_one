@@ -99,15 +99,19 @@ def calc_M_m(v_mag_b_e,q_k1k):
     return M_m
 
 def calc_K(P_k1k,M_m,R):
-    K=np.linalg.inv(np.dot(P_k1k,np.dot(M_m.T,(np.dot(M_m,np.dot(P_k1k,M_m.T)+R))))) #check
+    K=np.dot(P_k1k,np.dot(M_m.T,np.linalg.inv(np.dot(M_m,np.dot(P_k1k,M_m.T))+ R))) #check
     return K
     
 def update_quaternion(phi,delta_x_k1k,q_kk):
-    delta_q=(delta_x_k1k[0:3],0)
+    delta_q=np.hstack((delta_x_k1k[0:3],np.array([0])))
+    #print("delta_x_kk=")
+    #print(delta_x_k1k)
+    #print("q_kk=")
+    #print(q_kk)
     return qnv.quatMultiplyNorm(delta_q,q_kk)
 
 def update_state_vector(K,y,x_k1k,M_m):
-    return x_k1k+np.dot(K,np.dot(y-M_m,x_k1k))
+    return x_k1k+np.dot(K,y-np.dot(M_m,x_k1k))
 
 def update_covariance(I6,K,M_m,P_k1k):
     return np.dot((I6-np.dot(K,M_m)),P_k1k)
