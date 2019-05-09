@@ -47,8 +47,7 @@ def w_bob_calc(w_m_k,q_kk,w_oio,b_e):
     return w_bob
   
 def phi_calc(w_bob):
-    I3=np.eye(3)
-    A=I3-qnv.skew(w_bob)
+    A=-qnv.skew(w_bob)
     C=np.matrix([[A[0,0],A[0,1],A[0,2],B[0,0],B[0,1],B[0,2]],[A[1,0],A[1,1],A[1,2],B[1,0],B[1,1],B[1,2]],[A[2,0],A[2,1],A[2,2],B[2,0],B[2,1],B[2,2]],[0,0,0,0,0,0],[0,0,0,0,0,0],[0,0,0,0,0,0]])
     phi=scipy.linalg.expm(C*t)  
     return phi
@@ -90,6 +89,7 @@ def calc_v_mag_b_e(v_mag_b_m,v_mag_o,q_k1k):
     return v_mag_b_e
 
 def calc_y(v_mag_b_m,v_mag_b_e):
+    print(v_mag_b_e)# v_mag_b_m)
     y=v_mag_b_m-v_mag_b_e
     return y
 

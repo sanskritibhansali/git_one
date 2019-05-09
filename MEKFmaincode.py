@@ -19,9 +19,11 @@ print("v_state0")
 print(v_state0)                         
 t0 = 0
 #Make satellite object
-Advitiy = satellite.Satellite(v_state0,t0) 
-Advitiy.setMag_i(np.array([1,1,1]))
-Advitiy.setMag_b_m_c(np.array([1,1,1]))
+#Advitiy = satellite.Satellite(v_state0,t0) 
+#Advitiy.setMag_i(np.array([1,1,1]))
+#Advitiy.setMag_b_m_c(np.array([1,1,1]))
+#Advitiy.setPos(np.array([1,1,1]))
+#Advitiy.setVel(np.array([1,2,1]))
 #Advitiy.setMag_o(np.array([1,2,1]))
   #t0 from line 42 of main_code
 
@@ -32,14 +34,37 @@ b_e=np.array([0,0,0]) #estimated bias
 #I6=np.matrix('1,0,0,0,0,0;0,1,0,0,0,0;0,0,1,0,0,0;0,0,0,1,0,0;0,0,0,0,1,0;0,0,0,0,0,1')
 #P_k=np.matrix('1,0,0,0,0,0;0,1,0,0,0,0;0,0,1,0,0,0;0,0,0,1,0,0;0,0,0,0,1,0;0,0,0,0,0,1') #initial state covariance matrix
 q_kk=np.array([0,0,0,1])
+I3=np.array([[1,0,0],[0,1,0],[0,0,1]]) #defining 3x3 identity matrix 
+I4=np.array([[1,0,0,0],[0,1,0,0],[0,0,1,0],[0,0,0,1]]) #defining 4x4 identity matrix
+I6=np.array([[1,0,0,0,0,0],[0,1,0,0,0,0],[0,0,1,0,0,0],[0,0,0,1,0,0],[0,0,0,0,1,0],[0,0,0,0,0,1]])
+P_k=np.array([[1,0,0,0,0,0],[0,1,0,0,0,0],[0,0,1,0,0,0],[0,0,0,1,0,0],[0,0,0,0,1,0],[0,0,0,0,0,1]]) #initial state covariance matrix
+q_kk=np.array([0,0,0,1])
+b=np.array([1,1,1])
+b_e=np.array([0,0,0])
+#w_m_k=np.matrix('1,1,1').T
+w_oio=np.array([1,1,1])
+R=I3
+#quat=qnv.quat2rotm(np.squeeze(np.asarray(q_kk)))
+
+#q=np.asmatrix(quat)
+#delta_b=b-b_e #delta b, diffence between gyro bias and estimated bias
+#w_bib=w_m_k-b_e #estimated omega
+#w_bob=w_bib-(q*w_oio)
+#delta_theta=q_kk[0:3,0]/q_kk[3,0] #vector part of error quaternion normalised such that scalar part is equated to 1
+#delta_x=np.array([delta_theta[0],delta_theta[1],delta_theta[2],delta_b[0],delta_b[1],delta_b[2]])  #error state vector 
+#A=I3-qnv.skew(w_bob)
+B=-I3
+t=1
+sigma_r_sq=1
+sigma_w_sq=1
 #R=I3
 #v_mag_o=Advitiy.getMag_o()
 #v_mag_o=sat.getMag_o()
 #v_mag_b_m=Advitiy.getMag_b_m_c()
 
 def estimator(sat):
-    v_mag_o=Advitiy.getMag_o()
-    v_mag_b_m=Advitiy.getMag_b_m_c()
+    v_mag_o=sat.getMag_o()
+    v_mag_b_m=sat.getMag_b_m_c()
     w_m_k=sat.getW_BI_b()
     w_oio=-v_w_IO_o
     delta_b=testfunction.delta_b_calc(b,b_e)
@@ -73,10 +98,11 @@ def estimator(sat):
     q_k1k1=testfunction.update_quaternion(phi,x_k1k,q_kk)
     #print("qk1k1")
     print(q_k1k1)
-    return q_k1k1
+    return q_k1k1, P_k1k1, x_k1k1
     
-print("result")
-print(estimator(Advitiy))
+    
+#print("result")
+#print(estimator(Advitiy))
 
 
 
