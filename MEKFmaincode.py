@@ -12,7 +12,8 @@ from scipy.linalg import expm
 import numpy as np
 import qnv
 import satellite
-
+import sensor
+from constants_1U import *
 
 v_state0 = np.hstack((v_q0_BO,v_w0_BOB))
 print("v_state0")
@@ -42,7 +43,7 @@ q_kk=np.array([0,0,0,1])
 b=np.array([1,1,1])
 b_e=np.array([0,0,0])
 #w_m_k=np.matrix('1,1,1').T
-w_oio=np.array([1,1,1])
+
 R=I3
 #quat=qnv.quat2rotm(np.squeeze(np.asarray(q_kk)))
 
@@ -55,17 +56,18 @@ R=I3
 #A=I3-qnv.skew(w_bob)
 B=-I3
 t=1
-sigma_r_sq=1
-sigma_w_sq=1
+
+
 #R=I3
 #v_mag_o=Advitiy.getMag_o()
 #v_mag_o=sat.getMag_o()
 #v_mag_b_m=Advitiy.getMag_b_m_c()
 
 def estimator(sat):
+    sat.setGyroVarBias(np.array([0,0,0]))
     v_mag_o=sat.getMag_o()
     v_mag_b_m=sat.getMag_b_m_c()
-    w_m_k=sat.getW_BI_b()
+    w_m_k=sensor.gyroscope(sat)
     w_oio=-v_w_IO_o
     delta_b=testfunction.delta_b_calc(b,b_e)
     w_bob=testfunction.w_bob_calc(w_m_k,q_kk,w_oio,b_e)
