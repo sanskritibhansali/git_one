@@ -48,12 +48,12 @@ def w_bob_calc(w_m_k,q_kk,w_oio,b_e):
   
 def phi_calc(w_bob):
     A=-qnv.skew(w_bob)
-    C=np.matrix([[A[0,0],A[0,1],A[0,2],B[0,0],B[0,1],B[0,2]],[A[1,0],A[1,1],A[1,2],B[1,0],B[1,1],B[1,2]],[A[2,0],A[2,1],A[2,2],B[2,0],B[2,1],B[2,2]],[0,0,0,0,0,0],[0,0,0,0,0,0],[0,0,0,0,0,0]])
+    C=np.matrix([[A[0,0],A[0,1],A[0,2],-1,0,0],[A[1,0],A[1,1],A[1,2],0,-1,0],[A[2,0],A[2,1],A[2,2],0,0,-1],[0,0,0,0,0,0],[0,0,0,0,0,0],[0,0,0,0,0,0]])
     phi=scipy.linalg.expm(C*t)  
     return phi
 
 def delta_x_calc(q_kk,delta_b):
-    delta_theta=q_kk[0:3]/q_kk[3] #vector part of error quaternion normalised such that scalar part is equated to 1
+    delta_theta=2*(q_kk[0:3]/q_kk[3]) #vector part of error quaternion normalised such that scalar part is equated to 1
     delta_x=np.array([delta_theta[0],delta_theta[1],delta_theta[2],delta_b[0],delta_b[1],delta_b[2]])  #error state vector 
     return delta_x  
                               
@@ -75,6 +75,9 @@ def propogate_state_vector(phi,delta_x):
 def propogate_covariance(phi,P_k):
     return np.dot(phi,np.dot(P_k,(phi.T)))+Q_k
 
+
+
+
 #v_mag_b_m=sat.getMag_b_m_c()  
 #v_mag_b_m=np.matrix('1,1,1').T
 #v_mag_o=sat.getMag_o()
@@ -89,7 +92,7 @@ def calc_v_mag_b_e(v_mag_b_m,v_mag_o,q_k1k):
     return v_mag_b_e
 
 def calc_y(v_mag_b_m,v_mag_b_e):
-    print(v_mag_b_e)# v_mag_b_m)
+    #print(v_mag_b_e)# v_mag_b_m)
     y=v_mag_b_m-v_mag_b_e
     return y
 
@@ -102,8 +105,8 @@ def calc_K(P_k1k,M_m,R):
     K=np.dot(P_k1k,np.dot(M_m.T,np.linalg.inv(np.dot(M_m,np.dot(P_k1k,M_m.T))+ R))) #check
     return K
     
-def update_quaternion(phi,delta_x_k1k,q_kk):
-    delta_q=np.hstack((delta_x_k1k[0:3],np.array([0])))
+def update_quaternion(delta_x_k1k,q_kk):
+    delta_q=np.hstack((delta_x_k1k[0:3]/2,np.array([0])))
     #print("delta_x_kk=")
     #print(delta_x_k1k)
     #print("q_kk=")
@@ -113,7 +116,7 @@ def update_quaternion(phi,delta_x_k1k,q_kk):
 def update_state_vector(K,y,x_k1k,M_m):
     return x_k1k+np.dot(K,y-np.dot(M_m,x_k1k))
 
-def update_covariance(I6,K,M_m,P_k1k):
-    return np.dot((I6-np.dot(K,M_m)),P_k1k)
+def update_covariance(I6,K,M_m,P_k1k,R):
+    return np.dot(np.dot((I6-np.dot(K,M_m)),P_k1k),I6-np.dot(K,M_m))+np.dot(np.dot(K,R),K.T)
  
     

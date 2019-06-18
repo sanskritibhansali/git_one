@@ -40,8 +40,7 @@ I4=np.array([[1,0,0,0],[0,1,0,0],[0,0,1,0],[0,0,0,1]]) #defining 4x4 identity ma
 I6=np.array([[1,0,0,0,0,0],[0,1,0,0,0,0],[0,0,1,0,0,0],[0,0,0,1,0,0],[0,0,0,0,1,0],[0,0,0,0,0,1]])
 P_k=np.array([[1,0,0,0,0,0],[0,1,0,0,0,0],[0,0,1,0,0,0],[0,0,0,1,0,0],[0,0,0,0,1,0],[0,0,0,0,0,1]]) #initial state covariance matrix
 q_kk=np.array([0,0,0,1])
-b=np.array([1,1,1])
-b_e=np.array([0,0,0])
+
 #w_m_k=np.matrix('1,1,1').T
 
 R=I3
@@ -54,7 +53,7 @@ R=I3
 #delta_theta=q_kk[0:3,0]/q_kk[3,0] #vector part of error quaternion normalised such that scalar part is equated to 1
 #delta_x=np.array([delta_theta[0],delta_theta[1],delta_theta[2],delta_b[0],delta_b[1],delta_b[2]])  #error state vector 
 #A=I3-qnv.skew(w_bob)
-B=-I3
+
 t=1
 
 
@@ -62,6 +61,9 @@ t=1
 #v_mag_o=Advitiy.getMag_o()
 #v_mag_o=sat.getMag_o()
 #v_mag_b_m=Advitiy.getMag_b_m_c()
+b=np.array([0.0001,0.0001,0.0001])
+b_e=np.array([0,0,0])
+
 
 def estimator(sat):
     sat.setGyroVarBias(np.array([0,0,0]))
@@ -70,6 +72,7 @@ def estimator(sat):
     w_m_k=sensor.gyroscope(sat)
     w_oio=-v_w_IO_o
     delta_b=testfunction.delta_b_calc(b,b_e)
+    
     w_bob=testfunction.w_bob_calc(w_m_k,q_kk,w_oio,b_e)
     #print(w_bob)
     phi=testfunction.phi_calc(w_bob)
@@ -94,17 +97,19 @@ def estimator(sat):
     x_k1k1=testfunction.update_state_vector(K,y,x_k1k,M_m)
     #print("x=" )
     #print(x_k1k1)
-    P_k1k1=testfunction.update_covariance(I6,K,M_m,P_k1k)
+    P_k1k1=testfunction.update_covariance(I6,K,M_m,P_k1k,R)
     #print("p=")
     #print(P_k1k1)
-    q_k1k1=testfunction.update_quaternion(phi,x_k1k,q_kk)
+    q_k1k1=testfunction.update_quaternion(x_k1k,q_kk)
     #print("qk1k1")
-    print(q_k1k1)
+    
+    #print(q_k1k1)
     return q_k1k1, P_k1k1, x_k1k1
     
     
 #print("result")
-#print(estimator(Advitiy))
+
+
 
 
 
