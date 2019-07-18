@@ -38,6 +38,7 @@ position=np.zeros((end,3))
 velocity=np.zeros((end,3))
 w_est=velocity.copy()
 w_gyro=velocity.copy()
+w_true=velocity.copy()
 q=np.zeros((end,4))
 RMSE=np.zeros((end,3))
 p=np.zeros((end,6,6))
@@ -46,6 +47,8 @@ xmod=np.zeros((end))
 for i in range(end):
     Advitiy.setGyroVarBias(np.array([0.001,0.001,0.001]))
     w_m_k=sensor.gyroscope(Advitiy)
+    #w_t_k=satellite.getW_BO_b(Advitiy)
+    #w_t_bib=satellite.getW_BI_b(Advitiy)
     Advitiy.setMag_i(m_magnetic_field_i[i,1:4]*1e-9)
     Advitiy.setMag_b_m_c(sensor.magnetometer(Advitiy))
     Advitiy.setPos(m_sgp_output[i,1:4]*1e-6)
@@ -63,12 +66,15 @@ for i in range(end):
     print(i)
     #print(f[3:6])
     P_k=p[i,:]
+    #w_true[i,:]=w_t_bib
     w_gyro[i,:]=w_m_k
-    w_est[i,:]=w_m_k+x[i,3:6]
+    w_est[i,:]=w_m_k+x[i,3:6]-b
     print(w_gyro[i,:]+b)
     #print(w_est[:,0]-w_gyro[:,0]-b[0])
     xmod[i]=np.linalg.norm(f) 
 
 #plt.plot(l,p[:,0,0], 'r')
-plt.plot(l,w_est[:,0]-w_gyro[:,0], 'b')
-#plt.plot(l,RMSE[:,2])
+plt.xlabel('number of iterations')  
+plt.ylabel('z component of angular rates')  
+plt.plot(l,w_est[:,2], 'b')
+plt.plot(l,w_gyro[:,2], 'r')
